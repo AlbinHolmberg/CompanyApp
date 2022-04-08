@@ -6,10 +6,50 @@
 //
 
 import UIKit
-
+struct Response: Codable {
+    var result: String
+    var amount: Double
+    var message: String
+    var payee: String
+    var version : Int
+}
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        if let url = URLContexts.first?.url{
+            print(url)
+            let components = URLComponents(
+                            url: url,
+                            resolvingAgainstBaseURL: false
+                        )!
+            let v:String? = components.queryItems?.first(where: {$0.name == "res"})?.value
+            let data = Data(v.unsafelyUnwrapped.utf8)
+            let decoder = JSONDecoder()
+            let decoded = try? decoder.decode(Response.self, from: data)
+            if decoded != nil{
+                print(decoded.unsafelyUnwrapped.result)
+                var status: String = ""
+                if decoded.unsafelyUnwrapped.result == "paid"{
+                    print("Payment completed!")
+                    status = "Paid!"
+                }else{
+                    print("Payment not completed!")
+                    status = "Not Paid!"
+                }
+                let alertController = UIAlertController(title: "Payment Status: ", message: status, preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
+                    alertController.addAction(okAction)
+                    
+                    window?.rootViewController?.present(alertController, animated: true, completion: nil)
+            }else{
+                print("no data was returned")
+            }
+            
+        }
+    }
+    
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
