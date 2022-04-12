@@ -38,6 +38,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         addTextFields()
         
     }
+    
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
             textField.resignFirstResponder()
             return true;
@@ -50,11 +51,13 @@ class ViewController: UIViewController, UITextFieldDelegate {
         self.view.endEditing(true)
     }
     override func viewWillLayoutSubviews() {
+        // Adding Menubar at top of view
         let width = self.view.frame.width
         let navigationBar: UINavigationBar = UINavigationBar(frame: CGRect(x: 0, y: 20, width: width, height: 40))
         navigationBar.backgroundColor = .opaqueSeparator
         self.view.addSubview(navigationBar)
         let navigationItem = UINavigationItem(title: "Company App")
+        // button for clearing textfields
         let clearBtn = UIBarButtonItem(title: "Clear", style: UIBarButtonItem.Style.plain, target: nil, action: #selector(clearFields))
         navigationItem.rightBarButtonItem = clearBtn
         navigationBar.setItems([navigationItem], animated: false)
@@ -70,24 +73,28 @@ class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     
-    
+    /**
+     Assembles an url scheme based on inputed information in textfields.
+    Then sends this data to the app with the registered CfBundleUrlScheme 'swish'  in Info.plist
+     */
     @objc func openSwish() {
+        // Create json string
         let data = """
         {"version":1,"payee":{"value":"\(phoneNrTxtField.text!)"},"amount":{"value":\(amountTxtField.text!)},"message":{"value":"\(messageTxtField.text!)","editable":true}}
         """.data(using: .utf8)!
         let json = String(decoding: data, as: UTF8.self)
         let notAllowedChars = CharacterSet.init(charactersIn: "!*'();:@&=+$,/?%#[]{} \"")
+        // add percent encoding on disallowed characters
         let paymentInfo = json.addingPercentEncoding(withAllowedCharacters: notAllowedChars.inverted)!
-        print(paymentInfo)
 
         
         let callbackUrl = "company%3A%2F%2F"
         
         let callbackResultParam = "res"
-
+        // complete url string
         let appScheme = "swish://payment?data="+paymentInfo+"&callbackurl="+callbackUrl+"&callbackresultparameter="+callbackResultParam
         let appUrl = URL(string: appScheme)
-
+        // If app exists, open it.
         if UIApplication.shared.canOpenURL(appUrl! as URL) {
             UIApplication.shared.open(appUrl!)
         } else {
@@ -95,8 +102,11 @@ class ViewController: UIViewController, UITextFieldDelegate {
         }
 
     }
-    
+    /**
+     Handles the response from the app with the CfBundleUrlScheme 'swish'.
+     */
     @objc func handleResponse(url:URL){
+        // decode url and add data to a Response-object
         let components = URLComponents(
                         url: url,
                         resolvingAgainstBaseURL: false
@@ -105,7 +115,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         let data = Data(v.unsafelyUnwrapped.utf8)
         let decoder = JSONDecoder()
         let decoded = try? decoder.decode(Response.self, from: data)
-        if decoded != nil{
+        if decoded != nil{ // If decoding was successful
             print(decoded.unsafelyUnwrapped.result)
             var status: String = ""
             if decoded.unsafelyUnwrapped.result == "paid"{
@@ -113,6 +123,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             }else{
                 status = "Not paid"
             }
+            // Show alert which displays if the payment was successful or not.
             let alertController = UIAlertController(title: "Payment Status: ", message: status, preferredStyle: .alert)
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
                 alertController.addAction(okAction)
@@ -123,7 +134,9 @@ class ViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    
+    /**
+     Add textfields for inputing the payment information
+     */
     func addTextFields(){
         phoneNrTxtField =  UITextField(frame: CGRect(x: 20, y: 200, width: 300, height: 50))
         phoneNrTxtField.borderStyle = UITextField.BorderStyle.line
