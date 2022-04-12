@@ -20,31 +20,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         if let url = URLContexts.first?.url{
             print(url)
-            let components = URLComponents(
-                            url: url,
-                            resolvingAgainstBaseURL: false
-                        )!
-            let v:String? = components.queryItems?.first(where: {$0.name == "res"})?.value
-            let data = Data(v.unsafelyUnwrapped.utf8)
-            let decoder = JSONDecoder()
-            let decoded = try? decoder.decode(Response.self, from: data)
-            if decoded != nil{
-                print(decoded.unsafelyUnwrapped.result)
-                var status: String = ""
-                if decoded.unsafelyUnwrapped.result == "paid"{
-                    status = "Paid"
-                }else{
-                    status = "Not paid"
-                }
-                let alertController = UIAlertController(title: "Payment Status: ", message: status, preferredStyle: .alert)
-                let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
-                    alertController.addAction(okAction)
-                    
-                    window?.rootViewController?.present(alertController, animated: true, completion: nil)
-            }else{
-                print("no data was returned")
-            }
-            
+            let viewController = self.window?.rootViewController as? ViewController
+            viewController?.handleResponse(url: url)
         }
     }
     

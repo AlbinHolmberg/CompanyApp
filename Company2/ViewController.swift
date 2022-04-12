@@ -96,6 +96,33 @@ class ViewController: UIViewController, UITextFieldDelegate {
 
     }
     
+    @objc func handleResponse(url:URL){
+        let components = URLComponents(
+                        url: url,
+                        resolvingAgainstBaseURL: false
+                    )!
+        let v:String? = components.queryItems?.first(where: {$0.name == "res"})?.value
+        let data = Data(v.unsafelyUnwrapped.utf8)
+        let decoder = JSONDecoder()
+        let decoded = try? decoder.decode(Response.self, from: data)
+        if decoded != nil{
+            print(decoded.unsafelyUnwrapped.result)
+            var status: String = ""
+            if decoded.unsafelyUnwrapped.result == "paid"{
+                status = "Paid"
+            }else{
+                status = "Not paid"
+            }
+            let alertController = UIAlertController(title: "Payment Status: ", message: status, preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
+                alertController.addAction(okAction)
+                self.present(alertController, animated: true, completion: nil)
+            
+        }else{
+            print("no data was returned")
+        }
+    }
+    
     
     func addTextFields(){
         phoneNrTxtField =  UITextField(frame: CGRect(x: 20, y: 200, width: 300, height: 50))
