@@ -11,7 +11,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     private let button:  UIButton={
         let button = UIButton()
-        button.backgroundColor = .systemRed
+        button.backgroundColor = .systemGreen
         button.setTitle("Pay with Swish", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.layer.cornerRadius = 10
@@ -30,8 +30,13 @@ class ViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(button)
         button.frame = CGRect(x: view.frame.width/2-100, y:view.frame.height-100, width: 200, height: 50)
         button.addTarget(self, action: #selector(openSwish), for: .touchUpInside)
-        
+        let paymentInfoLabel = UILabel.init(frame:CGRect(x: 20, y:150, width: 200, height: 50))
+        paymentInfoLabel.text = "Payment Information"
+        paymentInfoLabel.textAlignment = .center
+        paymentInfoLabel.font = paymentInfoLabel.font.withSize(20)
+        view.addSubview(paymentInfoLabel)
         addTextFields()
+        
     }
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
             textField.resignFirstResponder()
@@ -49,7 +54,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         let navigationBar: UINavigationBar = UINavigationBar(frame: CGRect(x: 0, y: 20, width: width, height: 40))
         navigationBar.backgroundColor = .opaqueSeparator
         self.view.addSubview(navigationBar)
-        let navigationItem = UINavigationItem(title: "Company")
+        let navigationItem = UINavigationItem(title: "Company App")
         let clearBtn = UIBarButtonItem(title: "Clear", style: UIBarButtonItem.Style.plain, target: nil, action: #selector(clearFields))
         navigationItem.rightBarButtonItem = clearBtn
         navigationBar.setItems([navigationItem], animated: false)

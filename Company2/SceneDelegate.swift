@@ -32,11 +32,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 print(decoded.unsafelyUnwrapped.result)
                 var status: String = ""
                 if decoded.unsafelyUnwrapped.result == "paid"{
-                    print("Payment completed!")
-                    status = "Paid!"
+                    status = "Paid"
                 }else{
-                    print("Payment not completed!")
-                    status = "Not Paid!"
+                    status = "Not paid"
                 }
                 let alertController = UIAlertController(title: "Payment Status: ", message: status, preferredStyle: .alert)
                 let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
