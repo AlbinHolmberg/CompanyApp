@@ -106,6 +106,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
      Handles the response from the app with the CfBundleUrlScheme 'swish'.
      */
     @objc func handleResponse(url:URL){
+        clearFields();
         // decode url and add data to a Response-object
         let components = URLComponents(
                         url: url,
@@ -123,8 +124,12 @@ class ViewController: UIViewController, UITextFieldDelegate {
             }else{
                 status = "Not paid"
             }
+            var infoStr = "Receiver: " + decoded.unsafelyUnwrapped.payee + "\n";
+            infoStr += "Amount  : " + String(decoded.unsafelyUnwrapped.amount) + "kr\n";
+            infoStr += "Message : " + decoded.unsafelyUnwrapped.message + "\n";
+            infoStr += "Payment Status: " + decoded.unsafelyUnwrapped.result;
             // Show alert which displays if the payment was successful or not.
-            let alertController = UIAlertController(title: "Payment Status: ", message: status, preferredStyle: .alert)
+            let alertController = UIAlertController(title: "Received payment info", message: infoStr, preferredStyle: .alert)
             let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
                 alertController.addAction(okAction)
                 self.present(alertController, animated: true, completion: nil)
